@@ -2,13 +2,22 @@
 CHCP 65001
 SETLOCAL
 
+:: Dossier où sont stockés les fichiers de configuration
+SET "ConfigDir=%~dp0ConfigFiles"
+
+:: Vérifier si le dossier de configuration existe
+IF NOT EXIST "%ConfigDir%" (
+    echo Le dossier de configuration %ConfigDir% n'existe pas.
+    exit /b
+)
+
 :: Nom du fichier de certificat
 SET "CertFileName=Create-ADUsersFromCSV.cer"
 
 :: Chemin complet du certificat
-SET "CertFilePath=%~dp0%CertFileName%"
+SET "CertFilePath=%ConfigDir%\%CertFileName%"
 
-:: Importer le certificat dans le magasin de certificats
+:: Importer le certificat dans le magasin de certificats de la machine
 certutil -addstore -f "Root" "%CertFilePath%"
 
 :: Vérifier si l'importation a réussi
