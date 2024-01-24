@@ -1,8 +1,9 @@
 <#
 .SYNOPSIS
-    Script d'importation en masse d'utilisateur dans un domaine Active Directory au travers d'un fichier CSV
+    Script de création d'utilisateur AD
 
 .DESCRIPTION
+    Script PowerShell de création en masse d'utilisateurs dans un domain Active Directory au travers d'un fichier CSV.
 
 .AUTHOR
     BOURGEOIS-ROMAIN Anthony, ingénieur sécurité PAM
