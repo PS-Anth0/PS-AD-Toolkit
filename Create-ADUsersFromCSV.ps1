@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Script d'importation en masse d'utilisateur dans un domaine Active Directory
+    Script d'importation en masse d'utilisateur dans un domaine Active Directory au travers d'un fichier CSV
 
 .DESCRIPTION
 
@@ -12,13 +12,13 @@
     1.0.0
 
 .LINK
-    GitHub : 
+    GitHub : https://github.com/Lacrim0sa/PS-AD-Toolkit
 
 .EXAMPLE
     ./Create-ADUsersFromCSV.ps1 -PasswordLength 20
 
 .NOTES
-    Init du script
+    01/2024 : Init du script
 #>
 
 # Params
