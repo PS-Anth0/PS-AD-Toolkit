@@ -98,6 +98,8 @@ $users = Import-Csv -Path $csvPath
 foreach ($user in $users) {
     $login = $user.matricule
     $name = $user.nom
+    $country = $user.country
+    $phone = $user.telephone
     $passwordText = Generate-Password -length $PasswordLength
     $password = $passwordText | ConvertTo-SecureString -AsPlainText -Force
 
@@ -105,6 +107,8 @@ foreach ($user in $users) {
         SamAccountName = $login
         Name = $name
         AccountPassword = $password
+        Country = $country
+        MobilePhone = $phone
     }
 
     if ($null -ne $AccountNotDelegated) {
