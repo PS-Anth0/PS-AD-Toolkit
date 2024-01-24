@@ -50,6 +50,12 @@ Function New-Password {
 }
 
 # Main Script
+
+if (-not (Get-Module -ListAvailable -Name ActiveDirectory)) {
+    Write-Host "Le module Active Directory n'est pas installé sur cette machine. Veuillez installer le module pour continuer : Import-Module ActiveDirectory" -ForegroundColor Red
+    exit
+}
+
 $logFileName = "Log_" + (Get-Date -Format "yyyyMMdd_HHmmss") + ".txt"
 $logPath = "$PSScriptRoot\" + $logFileName
 "--------- Start Job ---------" | Set-Content $logPath
