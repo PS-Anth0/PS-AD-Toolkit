@@ -1,3 +1,4 @@
+![logo](https://github.com/PS-Anth0/PS-AD-Toolkit/blob/main/ConfigFiles/Resources/PS-AD-Toolkit_1.png)
 # PS-AD-Toolkit
 Boite à outils PowerShell pour manipulation de domaine Active Directory
 
