@@ -9,9 +9,11 @@ $cert = New-SelfSignedCertificate -DnsName "VotreNomCertificat" -CertStoreLocati
 **-KeyUsage** définit l'usage de la clé comme signature numérique.  
 **-Type** spécifie qu'il s'agit d'un certificat de signature de code.  
 ### Vérifier le certificat
+Vous pouvez vérifier que le certificat a été correctement créé en utilisant :
 ```PowerShell
 Get-ChildItem cert:\CurrentUser\My -CodeSigningCert
 ```
+Cela devrait lister les certificats de signature de code disponibles dans votre magasin personnel.
 ### Exporter le certificat (optionnel)
 Si vous avez besoin d'exporter le certificat (par exemple, pour l'utiliser sur une autre machine), utilisez :
 ```PowerShell
