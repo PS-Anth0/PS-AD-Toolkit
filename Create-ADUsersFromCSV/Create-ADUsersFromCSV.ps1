@@ -51,10 +51,10 @@ Function Write-Log {
 
 Function New-Password {
     param (
-        [int]$length = 10
+        [int]$length = 20
     )
 
-    $characters = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789!@$?_-'
+    $characters = 'abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNOPQRSTUVWXYZ0123456789!@$?_-*/\:;.,&#([{}])=^'
     $password = For ($i=0; $i -lt $length; $i++) {
         $characters[(Get-Random -Maximum $characters.Length)]
     }
@@ -63,6 +63,15 @@ Function New-Password {
 }
 
 # Main Script
+Write-Host "
+ _____    _____                    _____           _______                _  _     _  _   
+|  __ \  / ____|            /\    |  __ \         |__   __|              | || |   (_)| |  
+| |__) || (___   ______    /  \   | |  | | ______    | |     ___    ___  | || | __ _ | |_ 
+|  ___/  \___ \ |______|  / /\ \  | |  | ||______|   | |    / _ \  / _ \ | || |/ /| || __|
+| |      ____) |         / ____ \ | |__| |           | |   | (_) || (_) || ||   < | || |_ 
+|_|     |_____/         /_/    \_\|_____/            |_|    \___/  \___/ |_||_|\_\|_| \__|                                                                            
+" -BackgroundColor Black -ForegroundColor DarkGreen
+
 if (-not (Get-Module -ListAvailable -Name ActiveDirectory)) {
     Write-Host "Le module Active Directory n'est pas installé sur cette machine. Veuillez installer le module pour continuer" -ForegroundColor Red
     exit
@@ -82,7 +91,7 @@ $openFileDialog.ShowDialog() | Out-Null
 $csvPath = $openFileDialog.FileName
 
 if (-not (Test-Path $csvPath)) {
-    Write-Host "[WARN] Fichier CSV non sélectionné ou introuvable."
+    Write-Host "[WARN] Fichier CSV non sélectionné ou introuvable." -ForegroundColor Red
     Write-Log "[WARN] Fichier CSV non sélectionné ou introuvable."
     exit
 }
