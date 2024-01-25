@@ -29,13 +29,13 @@ IF %ERRORLEVEL% EQU 0 (
 
 :: Demander à l'utilisateur s'il souhaite modifier la politique d'exécution de PowerShell
 echo =================================================================
-echo Voulez-vous modifier la politique d'exécution de PowerShell pour autoriser les scripts signés (AllSigned)?
+echo Voulez-vous modifier la politique d'exécution de PowerShell pour autoriser les scripts signés (RemoteSigned) pour l'utilisateur actuel?
 echo (Y)es - Modifier la politique d'exécution
 echo (N)o - Ne pas modifier
 set /p UserChoice=Votre choix [Y/N]: 
 
 IF /I "%UserChoice%"=="Y" (
-    powershell -Command "Set-ExecutionPolicy -ExecutionPolicy AllSigned -Scope CurrentUser -Force"
+    powershell -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser -Force"
     IF %ERRORLEVEL% EQU 0 (
     echo Politique d'exécution modifiée avec succès.
     ) ELSE (
