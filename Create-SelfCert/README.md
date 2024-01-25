@@ -6,7 +6,8 @@ $cert = New-SelfSignedCertificate -DnsName "VotreNomCertificat" -CertStoreLocati
 ```
 **-DnsName** est le nom du certificat.  
 **-CertStoreLocation** spécifie où le certificat sera stocké (dans ce cas, dans le magasin personnel de l'utilisateur actuel).  
-**-KeyUsage** définit l'usage de la clé comme signature numérique, et -Type spécifie qu'il s'agit d'un certificat de signature de code.  
+**-KeyUsage** définit l'usage de la clé comme signature numérique.  
+**-Type** spécifie qu'il s'agit d'un certificat de signature de code.  
 ### Vérifier le certificat
 ```PowerShell
 Get-ChildItem cert:\CurrentUser\My -CodeSigningCert
