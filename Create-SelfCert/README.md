@@ -23,5 +23,10 @@ Export-Certificate -Cert $cert -FilePath "C:\chemin\vers\certificat.cer"
 ```PowerShell
 Set-AuthenticodeSignature "C:\chemin\vers\script.ps1" $cert
 ```
+### Importer un Certificat CER dans le Magasin LocalMachine
+```PowerShell
+Import-Certificate -FilePath "C:\chemin\vers\certificat.cer" -CertStoreLocation Cert:\LocalMachine\My
+```
+Le chemin Cert:\LocalMachine\My spécifie le magasin personnel de la machine. Vous pouvez changer ce chemin pour cibler un magasin différent si nécessaire.  
 
 **Remarque importante :** Gardez à l'esprit que les certificats auto-signés ne sont pas vérifiés par une autorité de certification (CA) externe. Ils sont généralement utilisés à des fins de test et de développement. Pour un environnement de production, il est conseillé d'utiliser un certificat émis par une CA reconnue.
