@@ -34,14 +34,14 @@ echo (Y)es - Modifier la politique d'exécution
 echo (N)o - Ne pas modifier
 set /p UserChoice=Votre choix [Y/N]: 
 
-if /I "%UserChoice%"=="Y" (
+IF /I "%UserChoice%"=="Y" (
     powershell -Command "Set-ExecutionPolicy -ExecutionPolicy AllSigned -Scope CurrentUser -Force"
     IF %ERRORLEVEL% EQU 0 (
     echo Politique d'exécution modifiée avec succès.
     ) ELSE (
         echo Erreur lors de la modification de la politique d'exécution.
     )
-) ELSE if /I "%UserChoice%"=="N" (
+) ELSE IF /I "%UserChoice%"=="N" (
     echo Modification de la politique d'exécution ignorée.
 ) ELSE (
     echo Choix non valide, veuillez entrer Y ou N.
@@ -55,7 +55,7 @@ echo (Y)es - Installer le module RSAT AD
 echo (N)o - Ne pas installer
 set /p UserChoice=Votre choix [Y/N]: 
 
-if /I "%UserChoice%"=="Y" (
+IF /I "%UserChoice%"=="Y" (
     powershell -Command "Install-WindowsFeature RSAT-AD-PowerShell"
     IF %ERRORLEVEL% EQU 0 (
     echo Module RSAT Active Directory installé avec succès.
@@ -63,7 +63,7 @@ if /I "%UserChoice%"=="Y" (
         echo Erreur lors de l'installation du module RSAT Active Directory.
     )
     echo Module RSAT Active Directory installe.
-) ELSE if /I "%UserChoice%"=="N" (
+) ELSE IF /I "%UserChoice%"=="N" (
     echo Installation du module RSAT AD ignorée.
 ) ELSE (
     echo Choix non valide, veuillez entrer Y ou N.
