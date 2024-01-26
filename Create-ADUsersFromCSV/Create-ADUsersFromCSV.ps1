@@ -29,8 +29,16 @@ param (
     [int]$PasswordLength,
 
     [Parameter(Mandatory=$false)]
+    [Nullable[DateTime]]$AccountExpirationDate,
     [Nullable[bool]]$AccountNotDelegated,
+    [Nullable[SecureString]]$AccountPassword,
     [Nullable[bool]]$AllowReversiblePasswordEncryption,
+    [Nullable[ADAuthenticationPolicy]]$AuthenticationPolicy,
+    [Nullable[ADAuthenticationPolicy]]$AuthenticationPolicySilo,
+    
+    [ValidateSet("Negotiate", "Basic")]
+    [Nullable[ADAuthType]]$AuthType,
+
     [Nullable[bool]]$CannotChangePassword,
     [Nullable[bool]]$ChangePasswordAtLogon,
     [Nullable[bool]]$CompoundIdentitySupported,
