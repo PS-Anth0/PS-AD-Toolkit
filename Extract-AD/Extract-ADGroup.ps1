@@ -25,39 +25,56 @@
 # Params
 param(
     [Parameter(Mandatory=$true)]
-    [string]$groupFilter
+    [string]$groupFilter,
+    [Parameter(Mandatory=$true)]
+    [int]$recursionLevel = 1
 )
 
 function Get-ADGroupMembersRecursive {
     param(
-        [string]$GroupName
+        [string]$GroupName,
+        [int]$currentLevel
     )
+    
+    if ($currentLevel -le 0) {
+        return
+    }
     
     $groupMembers = Get-ADGroupMember -Identity $GroupName
     
+    $results = @()
     foreach ($member in $groupMembers) {
         $details = New-Object PSObject -Property @{
             GroupName = $GroupName
             MemberName = $member.Name
             MemberSamAccountName = $member.SamAccountName
             MemberType = $member.objectClass
+            RecursionLevel = $recursionLevel - $currentLevel + 1
         }
         
-        $details
+        $results += $details
 
         if ($member.objectClass -eq 'group') {
-            Get-ADGroupMembersRecursive -GroupName $member.Name
+            $results += Get-ADGroupMembersRecursive -GroupName $member.Name -currentLevel ($currentLevel - 1)
         }
     }
+
+    return $results
 }
 
 function Get-ADGroupMemberOfRecursive {
     param(
-        [string]$GroupName
+        [string]$GroupName,
+        [int]$currentLevel
     )
+    
+    if ($currentLevel -le 0) {
+        return
+    }
     
     $memberOf = Get-ADGroup -Identity $GroupName -Properties MemberOf | Select-Object -ExpandProperty MemberOf
 
+    $results = @()
     foreach ($parentGroupDN in $memberOf) {
         $parentGroup = Get-ADGroup -Identity $parentGroupDN
         $details = New-Object PSObject -Property @{
@@ -65,12 +82,15 @@ function Get-ADGroupMemberOfRecursive {
             ParentGroupName = $parentGroup.Name
             ParentGroupSamAccountName = $parentGroup.SamAccountName
             ParentGroupType = $parentGroup.GroupCategory
+            RecursionLevel = $recursionLevel - $currentLevel + 1
         }
         
-        $details
+        $results += $details
 
-        Get-ADGroupMemberOfRecursive -GroupName $parentGroup.Name
+        $results += Get-ADGroupMemberOfRecursive -GroupName $parentGroup.Name -currentLevel ($currentLevel - 1)
     }
+
+    return $results
 }
 
 # Vérifier si le module ActiveDirectory est disponible
@@ -90,14 +110,14 @@ foreach ($group in $groups) {
     $groupName = $group.Name
     
     # Exporter les membres du groupe dans un fichier CSV
-    $groupMembersDetails = Get-ADGroupMembersRecursive -GroupName $groupName
-    $membersCsvPath = "Group_${groupName}_Members.csv"
+    $groupMembersDetails = Get-ADGroupMembersRecursive -GroupName $groupName -currentLevel $recursionLevel
+    $membersCsvPath = "Group_${groupName}_Members_Level${recursionLevel}.csv"
     $groupMembersDetails | Export-Csv -Path $membersCsvPath -NoTypeInformation
-    Write-Host "Les membres du groupe $groupName ont été exportés dans '$membersCsvPath'."
+    Write-Host "Les membres du groupe $groupName jusqu'au niveau de récursivité $recursionLevel ont été exportés dans '$membersCsvPath'."
 
     # Exporter les groupes dont le groupe est membre dans un autre fichier CSV
-    $groupMemberOfDetails = Get-ADGroupMemberOfRecursive -GroupName $groupName
-    $memberOfCsvPath = "Group_${groupName}_MemberOf.csv"
+    $groupMemberOfDetails = Get-ADGroupMemberOfRecursive -GroupName $groupName -currentLevel $recursionLevel
+    $memberOfCsvPath = "Group_${groupName}_MemberOf_Level${recursionLevel}.csv"
     $groupMemberOfDetails | Export-Csv -Path $memberOfCsvPath -NoTypeInformation
-    Write-Host "Les groupes dont le groupe $groupName est membre ont été exportés dans '$memberOfCsvPath'."
+    Write-Host "Les groupes dont le groupe $groupName est membre jusqu'au niveau de récursivité $recursionLevel ont été exportés dans '$memberOfCsvPath'."
 }
