@@ -19,7 +19,7 @@
     ./Create-ADUsersFromCSV.ps1 -ADPath "OU=Utilisateurs,DC=toto,DC=corp" -PasswordLength 20 -Enabled $true 
 
 .NOTES
-    01/2024 : Init du script
+    02/02/2024 : Init du script
 #>
 
 # Params
