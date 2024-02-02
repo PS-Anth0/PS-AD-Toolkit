@@ -56,6 +56,10 @@ if (-not(Get-Module -ListAvailable -Name ActiveDirectory)) {
 
 # Récupérer tous les groupes correspondant au filtre
 $groups = Get-ADGroup -Filter "Name -like '$groupFilter'"
+if ($null -eq $groups -or $groups.Count -eq 0) {
+    Write-Error "Aucun groupe trouvé avec le filtre $groupFilter."
+    exit
+}
 
 foreach ($group in $groups) {
     $groupName = $group.Name
