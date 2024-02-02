@@ -32,9 +32,9 @@ function Get-ADGroupMembersRecursive {
     param(
         [string]$GroupName
     )
-
+    
     $groupMembers = Get-ADGroupMember -Identity $GroupName
-
+    
     foreach ($member in $groupMembers) {
         $details = New-Object PSObject -Property @{
             GroupName = $GroupName
@@ -42,7 +42,7 @@ function Get-ADGroupMembersRecursive {
             MemberSamAccountName = $member.SamAccountName
             MemberType = $member.objectClass
         }
-
+        
         $details
 
         if ($member.objectClass -eq 'group') {
@@ -55,13 +55,21 @@ function Get-ADGroupMemberOfRecursive {
     param(
         [string]$GroupName
     )
-
+    
     $memberOf = Get-ADGroup -Identity $GroupName -Properties MemberOf | Select-Object -ExpandProperty MemberOf
 
     foreach ($parentGroupDN in $memberOf) {
-        $parentGroupName = (Get-ADGroup -Identity $parentGroupDN).Name
-        Get-ADGroupMembersRecursive -GroupName $parentGroupName
-        Get-ADGroupMemberOfRecursive -GroupName $parentGroupName
+        $parentGroup = Get-ADGroup -Identity $parentGroupDN
+        $details = New-Object PSObject -Property @{
+            ChildGroupName = $GroupName
+            ParentGroupName = $parentGroup.Name
+            ParentGroupSamAccountName = $parentGroup.SamAccountName
+            ParentGroupType = $parentGroup.GroupCategory
+        }
+        
+        $details
+
+        Get-ADGroupMemberOfRecursive -GroupName $parentGroup.Name
     }
 }
 
@@ -80,18 +88,16 @@ if ($null -eq $groups -or $groups.Count -eq 0) {
 
 foreach ($group in $groups) {
     $groupName = $group.Name
-    $allGroupDetails = @()
-
-    # Obtenir les détails des membres du groupe
+    
+    # Exporter les membres du groupe dans un fichier CSV
     $groupMembersDetails = Get-ADGroupMembersRecursive -GroupName $groupName
-    $allGroupDetails += $groupMembersDetails
+    $membersCsvPath = "Group_${groupName}_Members.csv"
+    $groupMembersDetails | Export-Csv -Path $membersCsvPath -NoTypeInformation
+    Write-Host "Les membres du groupe $groupName ont été exportés dans '$membersCsvPath'."
 
-    # Obtenir les détails des groupes "memberOf" de manière récursive
+    # Exporter les groupes dont le groupe est membre dans un autre fichier CSV
     $groupMemberOfDetails = Get-ADGroupMemberOfRecursive -GroupName $groupName
-    $allGroupDetails += $groupMemberOfDetails
-
-    # Exporter les informations dans un fichier CSV pour chaque groupe
-    $csvPath = "Group_${groupName}_Members.csv"
-    $allGroupDetails | Export-Csv -Path $csvPath -NoTypeInformation
-    Write-Host "Les membres du groupe $groupName, ainsi que les informations des groupes 'memberOf' et leurs membres, ont été exportés dans '$csvPath'."
+    $memberOfCsvPath = "Group_${groupName}_MemberOf.csv"
+    $groupMemberOfDetails | Export-Csv -Path $memberOfCsvPath -NoTypeInformation
+    Write-Host "Les groupes dont le groupe $groupName est membre ont été exportés dans '$memberOfCsvPath'."
 }
