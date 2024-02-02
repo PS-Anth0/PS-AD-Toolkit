@@ -35,10 +35,15 @@ if (-not(Get-Module -ListAvailable -Name ActiveDirectory)) {
 }
 
 try {
-    # Récupérer les groupes dont l'utilisateur est membre
-    $userGroups = Get-ADUser -Identity $userName -Properties MemberOf -ErrorAction Stop | Select-Object -ExpandProperty MemberOf
+    $user = Get-ADUser -Identity $userName -Properties MemberOf -ErrorAction Stop
 } catch {
-    Write-Error "Aucun utilisateur trouvé avec le nom $userName." -ForegroundColor Red
+    Write-Error "Aucun utilisateur trouvé avec le nom $userName."
+    exit
+}
+
+$userGroups = $user | Select-Object -ExpandProperty MemberOf
+if ($null -eq $userGroups -or $userGroups.Count -eq 0) {
+    Write-Error "Aucun groupe trouvé pour l'utilisateur $userName."
     exit
 }
 
