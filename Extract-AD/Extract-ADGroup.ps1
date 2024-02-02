@@ -24,6 +24,7 @@
 
 # Params
 param(
+    [Parameter(Mandatory=$true)]
     [string]$groupFilter
 )
 
@@ -41,8 +42,6 @@ function Get-ADGroupMembersRecursive {
         $details.MemberSamAccountName = $member.SamAccountName
         $details.MemberType = $member.objectClass
         
-        $details
-        
         if ($member.objectClass -eq 'group') {
             Get-ADGroupMembersRecursive -GroupName $member.Name
         }
@@ -51,7 +50,7 @@ function Get-ADGroupMembersRecursive {
 
 # Vérifier si le module ActiveDirectory est disponible
 if (-not(Get-Module -ListAvailable -Name ActiveDirectory)) {
-    Write-Error "Le module ActiveDirectory est nécessaire mais n'est pas installé. Veuillez l'installer à l'aide de 'Install-WindowsFeature RSAT-AD-PowerShell' sur un serveur ou télécharger pour un poste client."
+    Write-Error "Le module ActiveDirectory est nécessaire mais n'est pas installé. Veuillez l'installer à l'aide de 'Install-WindowsFeature RSAT-AD-PowerShell' sur un serveur ou télécharger pour un poste client." -ForegroundColor Red
     exit
 }
 
