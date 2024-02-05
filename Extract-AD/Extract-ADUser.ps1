@@ -3,7 +3,7 @@
     Script de scan user AD
 
 .DESCRIPTION
-    Script PowerShell qui va scanner les groupes auxquels appartient un utilisateur du domaine
+    Script PowerShell d'analyse d'un utilisateur dans un domaine Active Directory
 
 .AUTHOR
     BOURGEOIS-ROMAIN Anthony, ingénieur sécurité PAM
