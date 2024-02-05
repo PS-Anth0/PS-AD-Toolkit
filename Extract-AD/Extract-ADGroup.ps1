@@ -3,7 +3,7 @@
     Script de scan group AD
 
 .DESCRIPTION
-    Script PowerShell qui va scanner les groupes est utilisateurs présent dans un groupe du domaine
+    Script PowerShell d'analyse du ou des groupes et utilisateurs présents dans un groupe ou des groupes du domaine Active Directory
 
 .AUTHOR
     BOURGEOIS-ROMAIN Anthony, ingénieur sécurité PAM
