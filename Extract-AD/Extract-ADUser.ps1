@@ -25,7 +25,11 @@
 # Params
 param(
     [Parameter(Mandatory=$true)]
-    [string]$userName
+    [string]$userName,
+
+    [Parameter(Mandatory=$false)]
+    [switch]$ExtractToCSV
+
 )
 
 # Vérifier si le module ActiveDirectory est disponible
@@ -35,32 +39,64 @@ if (-not(Get-Module -ListAvailable -Name ActiveDirectory)) {
 }
 
 try {
-    $user = Get-ADUser -Identity $userName -Properties MemberOf -ErrorAction Stop
+    $user = Get-ADUser -Identity $userName -Properties * -ErrorAction Stop
+    $details = New-Object PSObject -Property @{
+        Name                  = $user.Name
+        SamAccountName        = $user.SamAccountName
+        DistinguishedName     = $user.DistinguishedName
+        CN                    = $user.CN
+        Mail                  = $user.mail
+        MemberType            = $user.ObjectClass
+        Enabled               = $user.Enabled
+        AccountExpirationDate = $user.AccountExpirationDate
+        whenChanged           = $user.whenChanged
+        whenCreated           = $user.whenCreated
+        
+    }
 } catch {
-    Write-Error "Aucun utilisateur trouvé avec le nom $userName."
+    Write-Error "Aucun utilisateur trouvé avec le nom $userName !"
     exit
 }
 
 $userGroups = $user | Select-Object -ExpandProperty MemberOf
 if ($null -eq $userGroups -or $userGroups.Count -eq 0) {
-    Write-Error "Aucun groupe trouvé pour l'utilisateur $userName."
-    exit
+    Write-Host "Aucun groupe trouvé pour l'utilisateur $userName !" -ForegroundColor DarkYellow
 }
 
 # Créer une liste pour stocker les informations des groupes
 $groupInfoList = @()
 
 foreach ($group in $userGroups) {
-    $groupObj = Get-ADGroup -Identity $group -Properties *
+    $groupObj  = Get-ADGroup -Identity $group -Properties *
     $groupInfo = New-Object PSObject -Property @{
-        GroupName = $groupObj.Name
-        Description = $groupObj.Description
+        GroupName         = $groupObj.Name
+        Description       = $groupObj.Description
         DistinguishedName = $groupObj.DistinguishedName
     }
     $groupInfoList += $groupInfo
 }
 
-# Exporter les informations dans un fichier CSV
-$groupInfoList | Export-Csv -Path "User_${userName}_Groups.csv" -NoTypeInformation
+if ($ExtractToCSV) {
+    # Exporter les informations dans des fichiers CSV
+    $groupInfoList | Export-Csv -Path "User_${userName}_MemberOf.csv" -NoTypeInformation
+    Write-Host "Les groupes de l'utilisateur $userName ont été exportés dans 'User_${userName}_MemberOf.csv'" -ForegroundColor Green
 
-Write-Host "Les groupes de l'utilisateur $userName ont été exportés dans 'User_${userName}_Groups.csv'." -ForegroundColor Green
+    $details       | Export-Csv -Path "User_${userName}_Infos.csv" -NoTypeInformation
+    Write-Host "Les informations de l'utilisateur $userName ont été exportés dans 'User_${userName}_Infos.csv'" -ForegroundColor Green
+}
+else {
+    Write-Host "`nInformations de l'utilisateur : $userName`n
+        Name                  = $($user.Name)
+        SamAccountName        = $($user.SamAccountName)
+        DistinguishedName     = $($user.DistinguishedName)
+        CN                    = $($user.CN)
+        Mail                  = $($user.mail)
+        MemberType            = $($user.ObjectClass)
+        Enabled               = $($user.Enabled)
+        AccountExpirationDate = $($user.AccountExpirationDate)
+        whenChanged           = $($user.whenChanged)
+        whenCreated           = $($user.whenCreated)
+    "
+
+    Write-Host "`nL'utilisateur est membre de : $groupInfoList`n"
+}
