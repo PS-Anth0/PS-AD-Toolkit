@@ -86,17 +86,22 @@ if ($ExtractToCSV) {
 }
 else {
     Write-Host "`nInformations de l'utilisateur : $userName`n
-        Name                  = $($user.Name)
-        SamAccountName        = $($user.SamAccountName)
-        DistinguishedName     = $($user.DistinguishedName)
-        CN                    = $($user.CN)
-        Mail                  = $($user.mail)
-        MemberType            = $($user.ObjectClass)
-        Enabled               = $($user.Enabled)
-        AccountExpirationDate = $($user.AccountExpirationDate)
-        whenChanged           = $($user.whenChanged)
-        whenCreated           = $($user.whenCreated)
+        Name                  : $($user.Name)
+        SamAccountName        : $($user.SamAccountName)
+        DistinguishedName     : $($user.DistinguishedName)
+        CN                    : $($user.CN)
+        Mail                  : $($user.mail)
+        MemberType            : $($user.ObjectClass)
+        Enabled               : $($user.Enabled)
+        AccountExpirationDate : $($user.AccountExpirationDate)
+        whenChanged           : $($user.whenChanged)
+        whenCreated           : $($user.whenCreated)
     "
 
     Write-Host "`nL'utilisateur est membre de : $groupInfoList`n"
+    foreach ($groupInfo in $groupInfoList) {
+        Write-Host "    GroupName         : $($groupInfo.GroupName)"
+        Write-Host "    Description       : $($groupInfo.Description)"
+        Write-Host "    DistinguishedName : $($groupInfo.DistinguishedName)`n"
+    }
 }
