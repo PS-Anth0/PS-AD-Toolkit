@@ -7,7 +7,7 @@
 
 .AUTHOR
     BOURGEOIS-ROMAIN Anthony, ingénieur sécurité PAM
-    Contact : anthony.bourgeois-romain@protonmail.com
+    Contact :
 
 .VERSION
     1.0.0
