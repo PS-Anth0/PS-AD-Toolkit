@@ -7,7 +7,7 @@
 
 .AUTHOR
     BOURGEOIS-ROMAIN Anthony, ingénieur sécurité PAM
-    Contact : anthony.bourgeois-romain@protonmail.com
+    Contact :
 
 .VERSION
     1.0.0
@@ -16,7 +16,7 @@
     GitHub : https://github.com/PS-Anth0/PS-AD-Toolkit
 
 .EXAMPLE
-    ./Create-ADUsersFromCSV.ps1 -ADPath "OU=Utilisateurs,DC=toto,DC=corp" -PasswordLength 20 -Enabled $true 
+    ./Extract-ADGroup.ps1 -groupFilter *_Group_X_*
 
 .NOTES
     02/02/2024 : Init du script
