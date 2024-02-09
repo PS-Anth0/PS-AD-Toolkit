@@ -75,10 +75,10 @@ function Get-ADGroupMembersRecursive {
                     RecursionLevel       = $recursionLevel - $currentLevel + 1
                 }
                 $results += $details
-                $results += Get-ADGroupMembersRecursive -GroupName $member.Name -currentLevel ($currentLevel - 1)
+                $results += Get-ADGroupMembersRecursive -GroupName $member.SamAccountName -currentLevel ($currentLevel - 1)
             }
             else{
-                Write-Host "$($memberDetails.Name) n'est ni un groupe, ni un utilisateur, type : ($($memberDetails.objectClass))" -ForegroundColor DarkYellow
+                Write-Host "$($memberDetails.SamAccountName) n'est ni un groupe, ni un utilisateur, type : ($($memberDetails.objectClass))" -ForegroundColor DarkYellow
             }
         }
     }
@@ -131,15 +131,48 @@ if ($null -eq $groups -or $groups.Count -eq 0) {
 
 $membersCSV  = "Group_${groupFilter}_Members_Level${recursionLevel}.csv"
 $memberOfCSV = "Group_${groupFilter}_MemberOf_Level${recursionLevel}.csv"
-    
+$membersCSV  = $membersCSV.Replace('*','').Replace('__','_')
+$memberOfCSV = $memberOfCSV.Replace('*','').Replace('__','_')
+
 # Exporter les membres du groupe dans un fichier CSV
 $groupMembersDetails = Get-ADGroupMembersRecursive -GroupName $groupFilter -currentLevel $recursionLevel
-$membersCsvPath      = $membersCSV.Replace('*','').Replace('__','_')
+$membersCsvPath      = $membersCSV
 $groupMembersDetails | Export-Csv -Path $membersCsvPath -NoTypeInformation
 Write-Host "Les membres du groupe $groupName jusqu'au niveau de récursivité $recursionLevel ont été exportés dans '$membersCsvPath'."
 
 # Exporter les groupes dont le groupe est membre dans un autre fichier CSV
 $groupMemberOfDetails = Get-ADGroupMemberOfRecursive -GroupName $groupFilter -currentLevel $recursionLevel
-$memberOfCsvPath      = $memberOfCSV.Replace('*','').Replace('__','_')
+$memberOfCsvPath      = $memberOfCSV
 $groupMemberOfDetails | Export-Csv -Path $memberOfCsvPath -NoTypeInformation
 Write-Host "Les groupes dont le groupe $groupName est membre jusqu'au niveau de récursivité $recursionLevel ont été exportés dans '$memberOfCsvPath'."
+
+# CSV to Excel
+$csvFile1 = $membersCSV
+$csvFile2 = $memberOfCSV
+
+$excelFile = "Members_and_MembersOf-$groupFilter.xlsx"
+
+$excel           = New-Object -ComObject Excel.Application
+$excel.Visible   = $false
+$workbook        = $excel.Workbooks.Add()
+
+$worksheet1      = $workbook.Sheets.Item(1)
+$importRange1    = $worksheet1.Range("A1").LoadFromText($csvFile1)
+
+$worksheet2      = $workbook.Sheets.Add()
+$worksheet2.Name = "MemberOf"
+$importRange2    = $worksheet2.Range("A1").LoadFromText($csvFile2)
+
+$workbook.SaveAs($excelFile)
+
+$workbook.Close()
+$excel.Quit()
+
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($worksheet1) | Out-Null
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($worksheet2) | Out-Null
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($workbook)   | Out-Null
+[System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel)      | Out-Null
+[System.GC]::Collect()
+[System.GC]::WaitForPendingFinalizers()
+
+Write-Host "Les fichiers CSV ont été importés dans $excelFile avec succès." -ForegroundColor Green
