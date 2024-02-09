@@ -26,7 +26,6 @@
 param(
     [Parameter(Mandatory=$true)]
     [string]$groupFilter,
-    [Parameter(Mandatory=$true)]
     [int]$recursionLevel = 1
 )
 
@@ -125,7 +124,7 @@ if (-not(Get-Module -ListAvailable -Name ActiveDirectory)) {
 # Récupérer tous les groupes correspondant au filtre
 $groups = Get-ADGroup -Filter "Name -like '$groupFilter'"
 if ($null -eq $groups -or $groups.Count -eq 0) {
-    Write-Error "Aucun groupe trouvé avec le filtre $groupFilter."
+    Write-Error "Aucun groupe trouvé avec le filtre $groupFilter !"
     exit
 }
 
