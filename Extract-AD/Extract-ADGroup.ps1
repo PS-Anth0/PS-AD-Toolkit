@@ -145,34 +145,3 @@ $groupMemberOfDetails = Get-ADGroupMemberOfRecursive -GroupName $groupFilter -cu
 $memberOfCsvPath      = $memberOfCSV
 $groupMemberOfDetails | Export-Csv -Path $memberOfCsvPath -NoTypeInformation
 Write-Host "Les groupes dont le groupe $groupName est membre jusqu'au niveau de récursivité $recursionLevel ont été exportés dans '$memberOfCsvPath'."
-
-# CSV to Excel
-$csvFile1 = $membersCSV
-$csvFile2 = $memberOfCSV
-
-$excelFile = "Members_and_MembersOf-$groupFilter.xlsx"
-
-$excel           = New-Object -ComObject Excel.Application
-$excel.Visible   = $false
-$workbook        = $excel.Workbooks.Add()
-
-$worksheet1      = $workbook.Sheets.Item(1)
-$importRange1    = $worksheet1.Range("A1").LoadFromText($csvFile1)
-
-$worksheet2      = $workbook.Sheets.Add()
-$worksheet2.Name = "MemberOf"
-$importRange2    = $worksheet2.Range("A1").LoadFromText($csvFile2)
-
-$workbook.SaveAs($excelFile)
-
-$workbook.Close()
-$excel.Quit()
-
-[System.Runtime.Interopservices.Marshal]::ReleaseComObject($worksheet1) | Out-Null
-[System.Runtime.Interopservices.Marshal]::ReleaseComObject($worksheet2) | Out-Null
-[System.Runtime.Interopservices.Marshal]::ReleaseComObject($workbook)   | Out-Null
-[System.Runtime.Interopservices.Marshal]::ReleaseComObject($excel)      | Out-Null
-[System.GC]::Collect()
-[System.GC]::WaitForPendingFinalizers()
-
-Write-Host "Les fichiers CSV ont été importés dans $excelFile avec succès." -ForegroundColor Green
